@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cookies } from "next/headers";
 import { TopNav } from "@/components/TopNav";
+import { SiteFooter } from "@/components/SiteFooter";
 import { CookieBanner } from "@/components/CookieBanner";
 import { CONSENT_COOKIE } from "@/lib/cookie-utils";
 
@@ -53,6 +54,7 @@ export default async function RootLayout({
       >
         <TopNav />
         {children}
+        <SiteFooter />
         <CookieBanner initialConsent={Boolean(initialConsent)} />
       </body>
     </html>

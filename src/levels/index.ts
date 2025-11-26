@@ -1,11 +1,8 @@
 import { solveMiniSudoku } from "@/lib/sudoku";
-import level107 from "./level107";
-import type {
-  MiniSudokuLevel,
-  ResolvedMiniSudokuLevel,
-} from "./types";
+import generatedLevels from "./generated-levels";
+import type { MiniSudokuLevel, ResolvedMiniSudokuLevel } from "./types";
 
-const rawLevels: MiniSudokuLevel[] = [level107];
+const rawLevels: MiniSudokuLevel[] = generatedLevels;
 
 const withSolutions = (level: MiniSudokuLevel): ResolvedMiniSudokuLevel => {
   const solutionGrid = solveMiniSudoku(level.startGrid);

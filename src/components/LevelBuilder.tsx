@@ -14,11 +14,6 @@ const createEmptyGrid = (): GridString =>
     Array.from({ length: GRID_SIZE }, () => ""),
   );
 
-const createEmptyMask = (): boolean[][] =>
-  Array.from({ length: GRID_SIZE }, () =>
-    Array.from({ length: GRID_SIZE }, () => false),
-  );
-
 const stringifyGrid = (rows: (number | null)[][], indent = 2) => {
   const pad = " ".repeat(indent);
   return `[\n${rows
@@ -49,12 +44,9 @@ const generateSlug = (value: string) => {
 const buildLevelCode = (
   meta: Record<string, string>,
   grid: GridString,
-  givens: boolean[][],
 ) => {
-  const startGrid = grid.map((row, rowIdx) =>
-    row.map((value, colIdx) =>
-      givens[rowIdx][colIdx] && value ? Number(value) : null,
-    ),
+  const startGrid = grid.map((row) =>
+    row.map((value) => (value ? Number(value) : null)),
   );
 
   return `import type { MiniSudokuLevel } from "./types";
@@ -75,10 +67,6 @@ export default level;
 
 export function LevelBuilder() {
   const [grid, setGrid] = useState<GridString>(() => createEmptyGrid());
-  const [givens, setGivens] = useState<boolean[][]>(() => createEmptyMask());
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
-    null,
-  );
   const [meta, setMeta] = useState({
     slug: "level107",
     title: "Level 107",
@@ -91,7 +79,6 @@ export function LevelBuilder() {
       return;
     }
 
-    setSelectedCell([row, col]);
     setGrid((prev) => {
       const clone = prev.map((line) => [...line]);
       clone[row][col] = value;
@@ -99,36 +86,18 @@ export function LevelBuilder() {
     });
   };
 
-  const toggleGiven = () => {
-    if (!selectedCell) return;
-    const [row, col] = selectedCell;
-    if (!grid[row][col]) {
-      return;
-    }
-
-    setGivens((prev) => {
-      const draft = prev.map((line) => [...line]);
-      draft[row][col] = !draft[row][col];
-      return draft;
-    });
-  };
-
   const resetBuilder = () => {
     setGrid(createEmptyGrid());
-    setGivens(createEmptyMask());
-    setSelectedCell(null);
   };
 
   const codeOutput = useMemo(
-    () => buildLevelCode(meta, grid, givens),
-    [meta, grid, givens],
+    () => buildLevelCode(meta, grid),
+    [meta, grid],
   );
 
   const editorUrl = `${githubLevelsNewUrl}?filename=${encodeURIComponent(
     `${meta.slug || "community-level"}.ts`,
   )}`;
-
-  const missingCells = grid.flat().filter((value) => !value).length;
 
   return (
     <section className="space-y-6">
@@ -140,8 +109,8 @@ export function LevelBuilder() {
           Generate a new community Mini Sudoku
         </h1>
         <p className="text-sm text-slate-600">
-          Fill in a solved 6×6 grid, toggle the cells you want visible on load,
-          and the builder will output only the starting grid. The solver inside
+          Enter only the numbers LinkedIn shows in the puzzle (the grey givens)
+          and leave everything else blank. The solver inside
           the app automatically computes the final solution and hints for
           players, so you don&apos;t need to include them manually. Once
           you&apos;re happy with the output, create a .ts file inside{" "}
@@ -209,7 +178,7 @@ export function LevelBuilder() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-slate-800">
-                Solution grid · click a cell to select it
+                Enter LinkedIn&apos;s givens (leave other cells blank)
               </p>
               <button
                 type="button"
@@ -225,9 +194,6 @@ export function LevelBuilder() {
             >
               {grid.map((row, rowIdx) =>
                 row.map((value, colIdx) => {
-                  const selected =
-                    selectedCell?.[0] === rowIdx && selectedCell?.[1] === colIdx;
-                  const isGiven = givens[rowIdx][colIdx];
                   return (
                     <input
                       key={`${rowIdx}-${colIdx}`}
@@ -235,42 +201,18 @@ export function LevelBuilder() {
                       pattern="[1-6]*"
                       maxLength={1}
                       value={value}
-                      onFocus={() => setSelectedCell([rowIdx, colIdx])}
                       onChange={(event) =>
                         handleGridChange(rowIdx, colIdx, event.target.value)
                       }
                       className={clsx(
                         "aspect-square rounded-xl border bg-white text-center text-xl font-semibold text-slate-900 outline-none transition focus:ring-2 focus:ring-indigo-400",
-                        selected && "border-indigo-500",
-                        isGiven && "bg-indigo-50 text-indigo-700",
+                        value && "bg-indigo-50 text-indigo-700 border-indigo-200",
                       )}
                       placeholder="·"
                     />
                   );
                 }),
               )}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={toggleGiven}
-                className="rounded-full border border-indigo-200 bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-200"
-                disabled={!selectedCell}
-              >
-                {selectedCell &&
-                givens[selectedCell[0]][selectedCell[1]]
-                  ? "Mark as hidden"
-                  : "Mark as given"}
-              </button>
-              <div className="flex flex-1 flex-col text-sm text-slate-500">
-                <span>
-                  Selected cell:{" "}
-                  {selectedCell
-                    ? `Row ${selectedCell[0] + 1}, Column ${selectedCell[1] + 1}`
-                    : "None"}
-                </span>
-                <span>Given cells appear grey for the player.</span>
-              </div>
             </div>
           </div>
 
@@ -283,12 +225,6 @@ export function LevelBuilder() {
             </p>
             <p className="text-lg font-semibold">Generated level file</p>
           </div>
-          {missingCells > 0 && (
-            <div className="rounded-2xl bg-rose-500/20 p-4 text-sm text-rose-100">
-              {missingCells} cells are still empty. Fill every cell before
-              publishing to ensure a valid Sudoku.
-            </div>
-          )}
           <textarea
             readOnly
             value={codeOutput}

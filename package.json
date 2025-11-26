@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/sync-levels.mjs",
+    "prebuild": "node scripts/sync-levels.mjs",
+    "sync:levels": "node scripts/sync-levels.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

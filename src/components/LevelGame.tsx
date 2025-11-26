@@ -176,18 +176,44 @@ export function LevelGame({
           rowStatus[row] = false;
           colStatus[col] = false;
           boxStatus[boxIndex] = false;
-          const key = `${row}-${col}`;
-          newInvalid.add(key);
+        }
 
-          const numericValue = Number(value);
-          for (let i = 0; i < gridSize; i += 1) {
-            if (mask[row][i] && activeLevel.startGrid[row][i] === numericValue) {
-              newConflicts.add(`${row}-${i}`);
-            }
-            if (mask[i][col] && activeLevel.startGrid[i][col] === numericValue) {
-              newConflicts.add(`${i}-${col}`);
+        if (mask[row][col]) {
+          continue; // given cells can't conflict with themselves
+        }
+
+        const numericValue = Number(value);
+        let hasConflict = false;
+
+        for (let i = 0; i < gridSize; i += 1) {
+          if (mask[row][i] && activeLevel.startGrid[row][i] === numericValue) {
+            newConflicts.add(`${row}-${i}`);
+            hasConflict = true;
+          }
+          if (mask[i][col] && activeLevel.startGrid[i][col] === numericValue) {
+            newConflicts.add(`${i}-${col}`);
+            hasConflict = true;
+          }
+        }
+
+        const boxRowStart = Math.floor(row / subgridRows) * subgridRows;
+        const boxColStart = Math.floor(col / subgridCols) * subgridCols;
+        for (let r = 0; r < subgridRows; r += 1) {
+          for (let c = 0; c < subgridCols; c += 1) {
+            const rr = boxRowStart + r;
+            const cc = boxColStart + c;
+            if (
+              mask[rr][cc] &&
+              activeLevel.startGrid[rr][cc] === numericValue
+            ) {
+              newConflicts.add(`${rr}-${cc}`);
+              hasConflict = true;
             }
           }
+        }
+
+        if (hasConflict) {
+          newInvalid.add(`${row}-${col}`);
         }
       }
     }
@@ -199,7 +225,15 @@ export function LevelGame({
       colStatus,
       boxStatus,
     };
-  }, [activeLevel, grid, givenMask, getBoxIndex, totalBoxes]);
+  }, [
+    activeLevel,
+    grid,
+    givenMask,
+    getBoxIndex,
+    totalBoxes,
+    subgridRows,
+    subgridCols,
+  ]);
 
   const emptySetRef = useMemo(() => new Set<string>(), []);
   const invalidCells = boardEvaluation?.invalidCells ?? emptySetRef;
@@ -238,7 +272,13 @@ export function LevelGame({
         completed.delete(idx);
       }
     });
-  }, [activeLevel, boardEvaluation, triggerFlash]);
+  }, [
+    activeLevel,
+    boardEvaluation,
+    triggerFlash,
+    subgridRows,
+    subgridCols,
+  ]);
 
   if (!activeLevel) {
     return (
