@@ -1,6 +1,22 @@
+<div align="center">
+  <img src="https://github.com/horizonsimulations/Horizon-787/raw/main/branding/Horizon_Simulations.png" alt="Horizon Simulations" width="400"/>
+</div>
+
 ## Mini Sudoku Archive
 
 Open-source recreation of LinkedIn’s 6×6 Mini Sudoku. The goal is to keep every community puzzle accessible, let authors submit new levels through PRs, and deploy the experience to Vercel.
+
+### The Story
+
+41 years ago, a small Japanese magazine "Nikoli" introduced the world to Sudoku. Today, they're back with a fresh take.
+
+Teaming up with Thomas Snyder, 3x World Sudoku Champion, they're handcrafting a new mini version. Just once a day.
+
+This archive preserves every daily puzzle from LinkedIn's Mini Sudoku series, ensuring players can replay any level they missed or want to solve again.
+
+**Original Creators:**
+- **Nikoli** — The Japanese puzzle company that introduced Sudoku to the world in 1984
+- **Thomas Snyder** — 3x World Sudoku Champion, co-creator of the Mini Sudoku series
 
 Built with **Next.js 16**, **React 19**, and **Tailwind CSS 4**.
 
@@ -55,4 +71,22 @@ vercel --prod
 
 ### License
 
-MIT License — contributions welcome. Open an issue or PR if you’d like to help expand the archive or improve the builder UX.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
+
+**Copyright © 2022-2025 Horizon Simulations Group Limited**
+
+Horizon Simulations Group Limited is a company registered in England and Wales.  
+Companies House Registration Number: 15714268.  
+Registered address: 3rd Floor, 86-90 Paul Street, London, United Kingdom, EC2A 4NE.
+
+#### GPL-3.0 License Terms
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html) for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+#### Contributing
+
+Contributions are welcome! By contributing to this project, you agree that your contributions will be licensed under the same GPL-3.0 license. Open an issue or PR if you'd like to help expand the archive or improve the builder UX.
